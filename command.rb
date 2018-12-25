@@ -28,7 +28,7 @@ class Command
       arg = @args[index]
       next_arg = @args[index + 1]
 
-      next if arg.nil? || already_parsed_arg(arg)
+      next if already_parsed_arg(arg)
       next if parse_target(arg)
 
       flag = parse_flag(arg)
