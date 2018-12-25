@@ -28,8 +28,7 @@ class Command
       arg = @args[index]
       next_arg = @args[index + 1]
 
-      next if already_parsed_arg(arg)
-      next if parse_target(arg)
+      next if already_parsed_arg(arg) || parse_target(arg)
 
       flag = parse_flag(arg)
       next if next_arg.nil? || flag.nil?
@@ -69,7 +68,3 @@ class Command
     true
   end
 end
-
-command = Command.new("asd target --flag test --wew --wow")
-
-puts command.targets
