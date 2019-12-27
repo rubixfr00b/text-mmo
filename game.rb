@@ -13,7 +13,7 @@ class Game
     read_data
   end
 
-  def read_data
+  def init_npcs
     CSV.foreach('data/npcs.csv') do |row|
       npc = {}
 

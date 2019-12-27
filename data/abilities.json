@@ -1,0 +1,26 @@
+[
+  {
+    "id": "a5l3",
+    "name": "Strike",
+    "type": "attack",
+    "target": "defender",
+    "effects": [
+      {
+        "type": "physical_damage",
+        "base_damage": 5
+      }
+    ]
+  },
+  {
+    "id": "t3e5",
+    "name": "Heal",
+    "type": "benefit",
+    "target": "self",
+    "effects": [
+      {
+        "type": "physical_healing",
+        "base_healing": 5
+      }
+    ]
+  }
+]

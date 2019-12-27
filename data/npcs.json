@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ewec",
+    "name": "Beter",
+    "stats": {
+      "health": 100,
+      "fortitude": 10,
+      "power": 10,
+      "agility": 10,
+      "sense": 10
+    },
+    "abilities": [
+      "strike",
+      "heal"
+    ],
+    "equipment": [
+
+    ],
+    "inventory": [
+
+    ]
+  },
+  {
+    "name": "Matt",
+    "stats": {
+      "health": 100,
+      "fortitude": 10,
+      "power": 10,
+      "agility": 10,
+      "sense": 10
+    },
+    "abilities": [
+      "strike",
+      "heal"
+    ],
+    "inventory": [
+
+    ],
+    "equipment": [
+
+    ],
+    "id": "9xzv"
+  }
+]

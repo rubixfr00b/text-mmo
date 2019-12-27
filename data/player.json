@@ -1,0 +1,17 @@
+{
+  "id": 0,
+  "name": "Kyle",
+  "stats": {
+    "health": 100,
+    "fortitude": 10,
+    "power": 10,
+    "agility": 10, 
+    "sense": 10
+  },
+  "abilities": [
+    "strike",
+    "heal"
+  ],
+  "equipment": [],
+  "inventory": []
+}

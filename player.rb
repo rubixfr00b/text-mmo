@@ -1,26 +1,30 @@
+require 'json'
+
 load 'being.rb'
 
 # There is only one Player, for now.
 class Player < Being
   def initialize
-    super(being_config)
-
-    listen
+    super(player_data)
   end
 
-  def being_config
-    {
-      'name' => name
-    }
+  def player_data
+    JSON.parse(File.read('data/player.json'))
   end
 
-  def name
-    print 'Enter your name: '
-    gets.to_s
-  end
+  def update_player_data
+    json = JSON.pretty_generate(
+      {
+        :name => @name,
+        :stats => @stats,
+        :abilities => @abilities,
+        :inventory => @inventory,
+        :equipment => @equipment
+      }
+    )
 
-  def listen
-    print "#{@name}$ "
-    gets.to_s
+    File.open("data/player.json", "w") do |f|
+      f.write(json)
+    end
   end
 end

@@ -1,11 +1,14 @@
 # Beings can do things like attack, converse, trade and/or give quests.
-# Both NPCs and Players are Beings.
+# Both NPCs, mobs and Players are Beings.
 class Being
-  def initialize(options)
-    @name = options['name']
-    @stats = {}
+  attr_accessor :name, :stats, :inventory, :abilities, :equipment, :abilities
 
-    puts "My name is #{@name}"
+  def initialize(being_data)
+    params = %w(id stats name inventory abilities equipment)
+
+    params.each do |param|
+      self.instance_variable_set("@#{param}", being_data[param])
+    end
   end
 
   def set_stat(stat, value)
