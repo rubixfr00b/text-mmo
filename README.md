@@ -53,7 +53,7 @@ Create an issue for the development of your feature. Add a link to your pull req
 
 ### Code review
 
-When you have deemed your feature complete, remove the "in development" label and add "code review". Maintainers will now assess the implementation of your feature to ensure it is clean and bug-free. 
+When you have deemed your feature complete, remove the "in development" label and add "code review". Maintainers will now assess the implementation of your feature and work with developers to ensure it is clean and bug-free. 
 
 ### All done!
 

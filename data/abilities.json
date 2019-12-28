@@ -1,6 +1,6 @@
 [
   {
-    "id": "a5l3",
+    "handle": "strike",
     "name": "Strike",
     "type": "attack",
     "target": "defender",
@@ -12,7 +12,7 @@
     ]
   },
   {
-    "id": "t3e5",
+    "handle": "heal",
     "name": "Heal",
     "type": "benefit",
     "target": "self",

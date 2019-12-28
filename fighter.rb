@@ -1,5 +1,7 @@
 load 'player.rb'
 load 'npc.rb'
+load 'AbilityManager.rb'
+load 'game.rb'
 
 class Fighter
   attr_reader :name, :stats, :being, :max_health, :current_health, :fleed, :abilities, :damages_received, :damages_dealt
@@ -8,8 +10,8 @@ class Fighter
     @being     = being
     @name      = being.name
     @stats     = being.stats
-    @abilities = being.abilities
     @fleed     = false
+    set_abilites(being.abilities)
 
     @max_health     = being.stats["health"]
     @current_health = being.stats["health"]
@@ -17,8 +19,34 @@ class Fighter
     @damages_received = [] # Used to calculate chance of dying
   end
 
+  def set_abilites(ability_handles) # ability_handles == ["strike", "heal"]
+    @ability_manager = AbilityManager.new
+
+    @abilities = ability_handles.map { |handle| @ability_manager.find_by_handle(handle) }
+  end
+
+  def calculate_healing(ability)
+    min_healing = ability["effects"].reduce(0) do |dmg, effect|
+      dmg + effect["base_healing"] # 5
+    end
+
+    min_healing
+  end
+
+  def receive_healing(healing)
+    previous_health = @current_health
+
+    @current_health += healing
+    @current_health = @max_health if @current_health > @max_health
+    @received_healing = @current_health - previous_health;
+
+    Game.log("#{@name} received #{@received_healing} points of health!")
+  end
+
   def calculate_damage(ability)
-    min_damage = ability["effects"].reduce(0) { |dmg, effect| dmg + effect["base_damage"] } # 5
+    min_damage = ability["effects"].reduce(0) do |dmg, effect|
+      dmg + effect["base_damage"] # 5
+    end
 
     power = @stats["power"] # 10
     sense = @stats["sense"] # 10
@@ -54,7 +82,7 @@ class Fighter
       # Dodged!
       received_damage = 0
 
-      puts "#{@name} dodged the attack!"
+      Game.log("#{@name} dodged the attack!")
       return received_damage
     end
 
@@ -65,7 +93,7 @@ class Fighter
     reduced_damage = rand(0..fortitude) # 0..10
     reduced_damage = 0 if reduced_damage < 0
 
-    puts "#{@name} blocked #{reduced_damage} points of damage, down from #{received_damage}!"
+    Game.log("#{@name} blocked #{reduced_damage} points of damage, down from #{received_damage}!")
 
     received_damage -= reduced_damage
 
@@ -96,10 +124,14 @@ class Fighter
 
       received_damage = defender.receive_damage(damage, self)
 
-      puts "#{@name} used #{ability["name"]} against #{defender.name}, dealing #{received_damage} damage!"
-      puts "#{defender.name} has #{defender.current_health} health left."
-    when "benefit"m
+      Game.log("#{@name} used #{ability["name"]} against #{defender.name}, dealing #{received_damage} damage!")
+      Game.log("#{defender.name} has #{defender.current_health} health left.")
+    when "benefit" # TODO: Target friendlies!
+      ability = select_ability(intent)
+      healing = calculate_healing(ability)
       
+      receive_healing(healing)
+      Game.log("#{@name} has #{@current_health} health left.") # TODO: DRY this up
     when "flee"
       flee
     end
@@ -111,39 +143,43 @@ class Fighter
       abilities_by_intent = @abilities.select { |a| a["type"] == intent }
       ability_names       = abilities_by_intent.map { |a| a["name"] }
   
-      puts "Select an ability:"
+      Game.log("Select an ability:")
       selected_ability_name = gets_from_array(ability_names)
   
       @abilities.find { |ability| ability["name"] == selected_ability_name }
     elsif @being.is_a?(NPC)
-      ability_recommendation
+      if intent == "attack"
+        return attack_ability_recommendation
+      end
+
+      if intent == "benefit"
+        return benefit_ability_recommendation
+      end
     end
   end
 
   def intent_recommendation
-    if average_damage_received * 2 > @current_health
-      if has_healing_ability
-        "benefit"
+    if max_damage_received > @current_health
+      if AbilityManager.has_healing_ability(@abilities)
+        return "benefit"
       else
-        "flee"
+        return "flee"
       end
     end
 
     "attack"
   end
 
-  def has_healing_ability
-    healing_abilities.length > 0
-  end
+  def max_damage_received
+    highest_damage = 0
 
-  def healing_abilities
-    @abilities.select do |a|
-      healing_effects(a).length > 0
+    @damages_received.each do |damage|
+      if damage > highest_damage
+        highest_damage = damage
+      end
     end
-  end
 
-  def healing_effects(ability)
-    ability["effects"].filter { |e| e["base_healing"] != nil }
+    highest_damage
   end
 
   def average_damage_received
@@ -158,8 +194,12 @@ class Fighter
     @damages_dealt.reduce(0) { |all_dmg, dmg| all_dmg + dmg } / @damages_dealt.count
   end
 
-  def ability_recommendation
+  def attack_ability_recommendation
+    AbilityManager.most_potent_attack_ability(@abilities)
+  end
 
+  def benefit_ability_recommendation
+    AbilityManager.most_potent_benefit_ability(@abilities)
   end
 
   def flee
@@ -175,7 +215,7 @@ class Fighter
       recommended_intent = intent_recommendation
       intent_types = %w[attack benefit flee]
       
-      puts "It's recommended that you #{recommended_intent}."
+      Game.log("It's recommended that you #{recommended_intent}.")
       gets_from_array(intent_types)
     elsif @being.is_a?(NPC)
       intent_recommendation
@@ -191,7 +231,7 @@ class Fighter
     if options.include?(input) 
       input
     else 
-      puts "You can't do that, try again."
+      Game.log("You can't do that, try again.")
       gets_from_array(options)
     end
   end

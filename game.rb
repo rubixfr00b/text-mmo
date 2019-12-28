@@ -25,4 +25,10 @@ class Game
       @npcs.push(NPC.new(npc))
     end
   end
+
+  def self.log(message)
+    puts message
+
+    sleep(0.5)
+  end
 end

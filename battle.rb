@@ -1,13 +1,14 @@
 load 'fighter.rb'
+load 'game.rb'
 
 class Battle
   attr_reader :defender, :attacker, :initiator, :target
 
   def initialize(initiator, target)
-    puts "[Battle] Initializing initator"
+    Game.log("[Battle] Initializing initator")
     @initiator = Fighter.new(initiator)
 
-    puts "[Battle] Initializing target"
+    Game.log("[Battle] Initializing target")
     @target = Fighter.new(target)
 
     @attacker = @initiator
@@ -20,12 +21,15 @@ class Battle
 
   # Recursive function where the attacker performs an action
   def turn
+    puts "\n---\n"
+    Game.log("It is #{@attacker.name}'s turn.")
+    
     @attacker.battle_turn(self)
 
     if @defender.is_dead?
-      puts "#{@defender.name} is dead!"
+      Game.log("#{@defender.name} is dead!")
     elsif @attacker.fleed
-      puts "#{@attacker.name} ran away successfully!"
+      Game.log("#{@attacker.name} ran away successfully!")
     else
       next_turn
     end
